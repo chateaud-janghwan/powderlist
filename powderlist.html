@@ -241,7 +241,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function clean(s){ return String(s).replace(/^\s*(?:\([^)]*\)\s*)+/,"").trim(); }
 
   function parse(wb){
-    var meta={start:"",end:"",print:""};
+    var meta={start:"",end:"",print:"",title:""};
     var drugs=[], cur=null;
     wb.SheetNames.forEach(function(name){
       var ws=wb.Sheets[name]; if(!ws||!ws["!ref"]) return;
@@ -257,6 +257,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           if(s==="처방일자:"){ for(var j=i+1;j<r.length;j++){ if(String(r[j]).trim()){ meta.start=String(r[j]).trim(); break; } } }
           else if(s==="~"){ for(var k=i+1;k<r.length;k++){ if(String(r[k]).trim()){ meta.end=String(r[k]).trim(); break; } } }
           else if(s==="출력시간:"){ for(var m=i+1;m<r.length;m++){ if(String(r[m]).trim()){ meta.print=String(r[m]).trim(); break; } } }
+          else if(s.indexOf("약품별 Fill List")>=0 && !meta.title){
+            meta.title=r.map(function(x){return String(x==null?"":x).trim();}).filter(function(x){return x;}).join(" ");
+          }
         }
         var get=function(idx){ return String(r[idx]==null?"":r[idx]).trim(); };
         var nm=get(C.name), code=get(C.code);
@@ -296,6 +299,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   function render(data){
     var d=data.drugs, meta=data.meta;
+    if(meta.title){ document.getElementById("rtitle").textContent = meta.title; }
     document.getElementById("rdate").textContent =
       "처방일자: "+(meta.start||"-")+(meta.end?("  ~  "+meta.end):"");
     document.getElementById("rprint").textContent =

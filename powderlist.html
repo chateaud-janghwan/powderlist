@@ -95,6 +95,8 @@
     white-space:nowrap;color:#000;font-size:13px;letter-spacing:0;
     border-top:1.6px solid #000;border-bottom:1.6px solid #000}
   tbody td{padding:5px 6px;vertical-align:top;font-weight:400;color:#000}
+  /* zebra: alternating blocks (same drug + same dose share one colour) */
+  tr.shade td{background:#f5f5f5}
   /* group box: light rectangle around all rows of the same drug */
   .gside td:first-child{border-left:1px solid #c2c2c2}
   .gside td:last-child{border-right:1px solid #c2c2c2}
@@ -123,6 +125,8 @@
     thead th{padding:2.5px 5px;font-size:12px;color:#000;font-weight:700;
       border-bottom:1.5px solid #000;border-top:1.5px solid #000;white-space:nowrap;text-align:center}
     tbody td{padding:1.5px 5px;font-size:13px;color:#000;font-weight:400}
+    tr.shade td{background:#f5f5f5;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
     .c-code{width:70px;font-size:11px}
     .c-num{width:64px;min-width:64px;text-align:center}
     .c-mark{width:36px}
@@ -135,7 +139,7 @@
     .c-mark{color:#000;font-weight:500}
     .neg{color:#000;font-weight:600}
     .grp:hover td{background:transparent}
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
 </style>
 </head>
@@ -306,12 +310,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       "출력시간: "+(meta.print||"-");
 
     var html="", lineCount=0;
+    // shading alternates per block: rows of the same drug with the same dose share one colour
+    var band=0, prevKey=null;
     d.forEach(function(g){
       g.lines.forEach(function(ln,i){
         lineCount++;
         var first=i===0, last=i===g.lines.length-1;
+        var key=g.code+"|"+ln.dose;
+        if(prevKey!==null && key!==prevKey) band^=1;
+        prevKey=key;
         // gside on every row + gtop/gbot on edges => light box around the whole drug group
-        var cls="grp gside"+(first?" gtop":"")+(last?" gbot":"");
+        var cls="grp gside"+(first?" gtop":"")+(last?" gbot":"")+(band?" shade":"");
         html+='<tr class="'+cls+'">';
         html+= i===0 ? cell(g.code,"c-code") : '<td class="c-code">&nbsp;</td>';
         html+= i===0 ? cell(g.name,"c-name") : '<td class="c-name">&nbsp;</td>';

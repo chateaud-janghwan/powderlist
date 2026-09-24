@@ -20,6 +20,7 @@ jobs:
           mkdir -p dist
           cp powderlist.html dist/index.html
           cp powderlist.html dist/powderlist.html
+          cp -R functions dist/functions
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

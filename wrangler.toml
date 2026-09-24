@@ -1,0 +1,8 @@
+name = "powderlist"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-11-01"
+
+# 방문자 카운터 저장용 KV
+[[kv_namespaces]]
+binding = "HITS"
+id = "7b0e8f8842ef4702add6b02710819493"

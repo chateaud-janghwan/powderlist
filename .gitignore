@@ -3,3 +3,5 @@ untitle.xls
 *.xlsx
 *.pdf
 .DS_Store
+dist/
+.wrangler/

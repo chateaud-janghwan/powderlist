@@ -383,5 +383,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 })();
 </script>
 
+<script>
+/* Supabase 유휴 중지 방지: 하루 한 번(브라우저별) 가벼운 읽기 요청을 보낸다.
+   실패해도 화면에는 아무 영향이 없다. (공개용 publishable 키만 사용) */
+(function(){
+  try{
+    var today=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
+    if(localStorage.getItem("sb_keepalive")===today) return;
+    fetch("https://mnmgeckkydvllwuxkmxd.supabase.co/rest/v1/pharm_notices?select=id&limit=1",
+      {headers:{apikey:"sb_publishable_TH_U2fgDIiNyBox6PDTReA_arbjTDWP"}})
+      .then(function(r){ if(r.ok) localStorage.setItem("sb_keepalive",today); })
+      .catch(function(){});
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>

@@ -113,7 +113,7 @@
   .c-sx{text-align:center;padding-left:0 !important;padding-right:0 !important}
   .c-sr{text-align:left;padding-left:4px !important}
   /* 용량칸·포수칸 폭을 같게(--sw, 렌더 시 최장 글자수로 설정) → x가 정중앙 = 헤더 '총량' 아래 */
-  .c-sl .sv,.c-sr .sv{display:inline-block;width:var(--sw,1ch)}
+  .c-sl .sv,.c-sr .sv{display:inline-block;min-width:var(--sw,1ch)}
   .grp:hover td{background:#FAFBFC}
   .neg{color:#000;font-weight:600}
 
@@ -393,7 +393,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       });
     });
     document.getElementById("rbody").innerHTML=html;
-    document.getElementById("rbody").parentNode.style.setProperty("--sw",sw+"ch");
+    // 최대 5글자 폭까지만 맞춤: 비정상적으로 긴 값 하나가 열 전체를 넓히지 않도록
+    document.getElementById("rbody").parentNode.style.setProperty("--sw",Math.min(sw,5)+"ch");
     document.getElementById("stat").textContent="약품 "+d.length+"종 · "+lineCount+"줄";
     report.style.display="block";
     toolbar.classList.add("show");

@@ -106,6 +106,7 @@
   .c-name{text-align:left;color:#000;font-weight:600}
   .c-num{text-align:center;width:74px;min-width:74px;white-space:nowrap;color:#000;font-weight:500}
   .c-mark{text-align:center;width:48px;color:#000;font-weight:500}
+  .c-sum{text-align:center;width:84px;min-width:84px;white-space:nowrap;color:#000;font-weight:700}
   .grp:hover td{background:#FAFBFC}
   .neg{color:#000;font-weight:600}
 
@@ -130,6 +131,7 @@
     .c-code{width:70px;font-size:11px}
     .c-num{width:64px;min-width:64px;text-align:center}
     .c-mark{width:36px}
+    .c-sum{width:70px;min-width:70px;font-weight:700}
     /* light group boxes around same-drug rows */
     .gside td:first-child{border-left:0.6px solid #b5b5b5}
     .gside td:last-child{border-right:0.6px solid #b5b5b5}
@@ -191,6 +193,7 @@
           <th class="c-num">횟수</th>
           <th class="c-num">처방환자수</th>
           <th class="c-num">합</th>
+          <th class="c-sum">용량별 총량</th>
           <th class="c-mark">구분</th>
         </tr></thead>
         <tbody id="rbody"></tbody>
@@ -318,6 +321,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     d.forEach(function(g){
       g.lines.forEach(function(ln,i){
         lineCount++;
+        // 같은 1회용량이 연속된 블록의 첫 줄에 '용량 x 합계' 표시 (예: 1 x 16)
+        var sumTxt="";
+        if(i===0 || g.lines[i-1].dose!==ln.dose){
+          var s=0, any=false;
+          for(var j=i;j<g.lines.length && g.lines[j].dose===ln.dose;j++){
+            var t=num(g.lines[j].tot); if(t!==null){ s+=t; any=true; }
+          }
+          if(any && ln.dose!=="") sumTxt=ln.dose+" x "+(Math.round(s*1000)/1000);
+        }
         var first=i===0, last=i===g.lines.length-1;
         var key=g.code+"|"+ln.dose;
         if(prevKey!==null && key!==prevKey) band^=1;
@@ -331,6 +343,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         html+= cell(ln.freq,"c-num");
         html+= cell(ln.pat,"c-num");
         html+= cell(ln.tot,"c-num");
+        html+= cell(sumTxt,"c-sum");
         html+= cell(ln.mark,"c-mark");
         html+='</tr>';
       });

@@ -189,11 +189,11 @@
         <thead><tr>
           <th class="c-code">약품코드</th>
           <th class="c-name" style="text-align:center">약품명칭</th>
+          <th class="c-sum">총량</th>
           <th class="c-num">1회용량</th>
           <th class="c-num">횟수</th>
           <th class="c-num">처방환자수</th>
           <th class="c-num">합</th>
-          <th class="c-sum">총량</th>
         </tr></thead>
         <tbody id="rbody"></tbody>
       </table>
@@ -338,11 +338,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         html+='<tr class="'+cls+'">';
         html+= i===0 ? cell(g.code,"c-code") : '<td class="c-code">&nbsp;</td>';
         html+= i===0 ? cell(g.name,"c-name") : '<td class="c-name">&nbsp;</td>';
+        html+= cell(sumTxt,"c-sum");
         html+= cell(ln.dose,"c-num");
         html+= cell(ln.freq,"c-num");
         html+= cell(ln.pat,"c-num");
         html+= cell(ln.tot,"c-num");
-        html+= cell(sumTxt,"c-sum");
         html+='</tr>';
       });
     });

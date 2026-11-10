@@ -112,6 +112,8 @@
   .c-sl{text-align:right;padding-right:4px !important}
   .c-sx{text-align:center;padding-left:0 !important;padding-right:0 !important}
   .c-sr{text-align:left;padding-left:4px !important}
+  /* 용량칸·포수칸 폭을 같게(--sw, 렌더 시 최장 글자수로 설정) → x가 정중앙 = 헤더 '총량' 아래 */
+  .c-sl .sv,.c-sr .sv{display:inline-block;width:var(--sw,1ch)}
   .grp:hover td{background:#FAFBFC}
   .neg{color:#000;font-weight:600}
 
@@ -336,7 +338,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
     var html="", lineCount=0;
     // shading alternates per block: rows of the same drug with the same dose share one colour
-    var band=0, prevKey=null;
+    var band=0, prevKey=null, sw=1;
     d.forEach(function(g){
       var seen={};
       g.lines.forEach(function(ln,i){
@@ -361,9 +363,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         html+='<tr class="'+cls+'">';
         html+= i===0 ? cell(g.code,"c-code") : '<td class="c-code">&nbsp;</td>';
         html+= i===0 ? cell(g.name,"c-name"+(g.name.length>48?" long":"")) : '<td class="c-name">&nbsp;</td>';
-        html+= cell(sumDose,"c-sum c-sl");
+        sw=Math.max(sw,sumDose.length,sumN.length);
+        html+= '<td class="c-sum c-sl"><span class="sv">'+esc(sumDose)+'</span></td>';
         html+= cell(sumN?"x":"","c-sum c-sx");
-        html+= cell(sumN,"c-sum c-sr");
+        html+= '<td class="c-sum c-sr"><span class="sv">'+esc(sumN)+'</span></td>';
         html+= cell(ln.dose,"c-num");
         html+= cell(ln.freq,"c-num");
         html+= cell(ln.pat,"c-num");
@@ -372,6 +375,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       });
     });
     document.getElementById("rbody").innerHTML=html;
+    document.getElementById("rbody").parentNode.style.setProperty("--sw",sw+"ch");
     document.getElementById("stat").textContent="약품 "+d.length+"종 · "+lineCount+"줄";
     report.style.display="block";
     toolbar.classList.add("show");

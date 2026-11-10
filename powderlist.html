@@ -308,6 +308,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
+  // 한 줄의 포 수: 횟수×환자수. 둘 중 하나가 비어 있으면 합÷1회용량으로 대신 계산
+  function packs(ln){
+    var f=num(ln.freq), p=num(ln.pat);
+    if(f!==null && p!==null) return f*p;
+    var t=num(ln.tot), d=num(ln.dose);
+    return (t!==null && d) ? t/d : 0;
+  }
+
+  // 1회용량 비교용 키: '1'과 '1.0'처럼 표기만 다른 같은 숫자를 같은 용량으로 본다
+  function doseKey(v){ var n=num(v); return n===null ? "s:"+String(v).trim() : "n:"+n; }
+
   function render(data){
     var d=data.drugs, meta=data.meta;
     if(meta.title){ document.getElementById("rtitle").textContent = meta.title; }
@@ -320,19 +331,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     // shading alternates per block: rows of the same drug with the same dose share one colour
     var band=0, prevKey=null;
     d.forEach(function(g){
+      var seen={};
       g.lines.forEach(function(ln,i){
         lineCount++;
-        // 같은 1회용량이 연속된 블록의 첫 줄에 '용량 x 합계' 표시 (예: 1 x 16)
-        var sumTxt="";
-        if(i===0 || g.lines[i-1].dose!==ln.dose){
-          var s=0, any=false;
-          for(var j=i;j<g.lines.length && g.lines[j].dose===ln.dose;j++){
-            var t=num(g.lines[j].tot); if(t!==null){ s+=t; any=true; }
-          }
-          if(any && ln.dose!=="") sumTxt=ln.dose+" x "+(Math.round(s*1000)/1000);
+        // 같은 약·같은 1회용량의 총 포수를 그 용량이 처음 나오는 줄에 '1회용량 x 총 포수'로 표시
+        // (예: 1 x 16, 0.5 x 10). 포수 = 횟수 × 처방환자수
+        // ('합'은 1회용량×횟수×환자수 = 정 수라서 포수가 아님)
+        var sumTxt="", dk=doseKey(ln.dose);
+        if(ln.dose!=="" && !seen[dk]){
+          seen[dk]=true;
+          var s=0;
+          g.lines.forEach(function(l2){ if(doseKey(l2.dose)===dk) s+=packs(l2); });
+          s=Math.round(s*1000)/1000;
+          if(s) sumTxt=ln.dose+" x "+s;
         }
         var first=i===0, last=i===g.lines.length-1;
-        var key=g.code+"|"+ln.dose;
+        var key=g.code+"|"+doseKey(ln.dose);
         if(prevKey!==null && key!==prevKey) band^=1;
         prevKey=key;
         // gside on every row + gtop/gbot on edges => light box around the whole drug group

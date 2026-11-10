@@ -103,10 +103,10 @@
   .gtop td{border-top:1px solid #c2c2c2}
   .gbot td{border-bottom:1px solid #c2c2c2}
   .c-code{width:84px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:#000;font-weight:500;text-align:left}
-  .c-name{text-align:left;color:#000;font-weight:600}
+  .c-name{text-align:left;color:#000;font-weight:600;white-space:nowrap}
   .c-num{text-align:center;width:74px;min-width:74px;white-space:nowrap;color:#000;font-weight:500}
   .c-mark{text-align:center;width:48px;color:#000;font-weight:500}
-  .c-sum{text-align:center;width:84px;min-width:84px;white-space:nowrap;color:#000;font-weight:700}
+  .c-sum{text-align:center;width:64px;white-space:nowrap;color:#000;font-weight:700}
   .grp:hover td{background:#FAFBFC}
   .neg{color:#000;font-weight:600}
 
@@ -131,7 +131,7 @@
     .c-code{width:70px;font-size:11px}
     .c-num{width:64px;min-width:64px;text-align:center}
     .c-mark{width:36px}
-    .c-sum{width:70px;min-width:70px;font-weight:700}
+    .c-sum{width:52px;font-weight:700}
     /* light group boxes around same-drug rows */
     .gside td:first-child{border-left:0.6px solid #b5b5b5}
     .gside td:last-child{border-right:0.6px solid #b5b5b5}
@@ -193,8 +193,7 @@
           <th class="c-num">횟수</th>
           <th class="c-num">처방환자수</th>
           <th class="c-num">합</th>
-          <th class="c-sum">용량별 총량</th>
-          <th class="c-mark">구분</th>
+          <th class="c-sum">총량</th>
         </tr></thead>
         <tbody id="rbody"></tbody>
       </table>
@@ -344,7 +343,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         html+= cell(ln.pat,"c-num");
         html+= cell(ln.tot,"c-num");
         html+= cell(sumTxt,"c-sum");
-        html+= cell(ln.mark,"c-mark");
         html+='</tr>';
       });
     });

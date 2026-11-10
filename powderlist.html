@@ -349,10 +349,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         var sumDose="", sumN="", dk=doseKey(ln.dose);
         if(ln.dose!=="" && !seen[dk]){
           seen[dk]=true;
-          var s=0;
-          g.lines.forEach(function(l2){ if(doseKey(l2.dose)===dk) s+=packs(l2); });
+          // 같은 용량 줄이 2개 이상일 때만 표시 (한 줄짜리는 옆 숫자와 중복이라 생략)
+          var s=0, cnt=0;
+          g.lines.forEach(function(l2){ if(doseKey(l2.dose)===dk && packs(l2)){ s+=packs(l2); cnt++; } });
           s=Math.round(s*1000)/1000;
-          if(s){ sumDose=ln.dose; sumN=String(s); }
+          if(s && cnt>=2){ sumDose=ln.dose; sumN=String(s); }
         }
         var first=i===0, last=i===g.lines.length-1;
         var key=g.code+"|"+doseKey(ln.dose);

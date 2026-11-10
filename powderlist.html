@@ -270,6 +270,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       var wide=lastCol>10;
       var C=wide?{code:1,name:3,dose:12,freq:16,pat:18,tot:20,mark:21}
                 :{code:1,name:2,dose:3,freq:4,pat:5,tot:6,mark:7};
+      // 원본 맨 끝의 전체 합계 줄을 걸러내기 위한 누적합 (시트별)
+      var acc={dose:0,freq:0,pat:0,tot:0,n:0};
+      function addLine(ln){
+        cur.lines.push(ln);
+        acc.dose+=num(ln.dose)||0; acc.freq+=num(ln.freq)||0;
+        acc.pat+=num(ln.pat)||0;   acc.tot+=num(ln.tot)||0; acc.n++;
+      }
+      function near(v,t){ var n=num(v); return n!==null && Math.abs(n-t)<0.01; }
+      // 약품명 없는 줄의 값이 위 모든 줄의 합과 같으면 합계 줄
+      function isTotalRow(ln){
+        return acc.n>=2 && acc.tot>0 &&
+          near(ln.tot,acc.tot) && near(ln.pat,acc.pat) && near(ln.freq,acc.freq);
+      }
       rows.forEach(function(r){
         // metadata
         for(var i=0;i<r.length;i++){
@@ -285,15 +298,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         var nm=get(C.name), code=get(C.code);
         var dose=get(C.dose), freq=get(C.freq), pat=get(C.pat), tot=get(C.tot), mark=get(C.mark);
         if(nm==="약품명칭"||dose==="1회용량") return;          // header row
+        // '합계/총계/소계' 글자가 있는 줄은 데이터가 아님
+        if(!nm && r.some(function(x){ return /^\s*(합\s*계|총\s*계|소\s*계|total)\s*:?\s*$/i.test(String(x)); })){ cur=null; return; }
         var doseNum=num(dose), totNum=num(tot);
         var hasData=(doseNum!==null)||(tot!=="");
         if(nm){
           if(doseNum===null && totNum===null) return;          // title / non-data
           cur={code:code,raw:nm,name:clean(nm),lines:[]};
           drugs.push(cur);
-          cur.lines.push({dose:dose,freq:freq,pat:pat,tot:tot,mark:mark});
+          addLine({dose:dose,freq:freq,pat:pat,tot:tot,mark:mark});
         } else if(hasData && cur){
-          cur.lines.push({dose:dose,freq:freq,pat:pat,tot:tot,mark:mark});
+          var ln={dose:dose,freq:freq,pat:pat,tot:tot,mark:mark};
+          if(isTotalRow(ln)){ cur=null; return; }            // 전체 합계 줄 → 버림
+          addLine(ln);
         }
       });
     });
